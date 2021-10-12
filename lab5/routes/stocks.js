@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
-const people = data.people;
+const stocks = data.stocks;
 
 router.get('/:id', async (req, res) => {
     try {
-        const person = await people.getPersonById(req.params.id);
-        res.json(person);
+        const stock = await stocks.getStockById(req.params.id);
+        res.json(stock);
     } catch (e) {
         res.status(404).json({ message: e });
     }
@@ -14,8 +14,8 @@ router.get('/:id', async (req, res) => {
   
 router.get('/', async (req, res) => {
     try {
-        const peopleList = await people.getPeople();
-        res.json(peopleList);
+        const stockList = await stocks.getStocks();
+        res.json(stockList);
     } catch (e) {
         res.status(500).send();
     }
