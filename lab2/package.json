@@ -1,0 +1,11 @@
+{
+    "name": "cs-546-lab-2",
+    "version": "1.0.0",
+    "description": "My lab 2 module",
+    "main": "index.js",
+    "scripts": {
+       "start": "node index.js"
+    },
+    "author": "David Staronka 10440468",
+    "license": "ISC"
+ }

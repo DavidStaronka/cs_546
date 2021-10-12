@@ -1,0 +1,14 @@
+{
+   "name": "cs-546-lab-4",
+   "version": "1.0.0",
+   "description": "My lab 4 module",
+   "main": "index.js",
+   "scripts": {
+      "start": "node index.js"
+   },
+   "author": "David Staronka 10440468",
+   "license": "ISC",
+   "dependencies": {
+      "mongodb": "^4.1.2"
+   }
+}
