@@ -2,7 +2,7 @@ const mongoCollections = require('./../config/mongoCollections');
 const restaurants = mongoCollections.restaurants;
 let { ObjectId } = require('mongodb');
 const uuid = require('uuid');
-const { builtinModules } = require('module');
+const restOps = require('./restaurants');
 
 function type_checker(item, type, errString, objType){
     if(item == undefined || typeof(item) != type || item.length == 0) throw errString;
@@ -50,11 +50,16 @@ async function create(restaurantId, title, reviewer, rating, dateOfReview, revie
         review: review
     };
 
-    await restCollection.updateOne({_id: restaurantId}, {$addToSet: {reviews: newReview}});
+    // console.log(restCollection);
+
+    await restCollection.updateOne({_id: objId}, {$addToSet: {reviews: newReview}});
+    // let testing = await restCollection.findOne({_id: objId});
+    // console.log("s")
+    // console.log(testing);
     return await restCollection
-        .updateOne({_id: restaurantId}, {$set: {overallRating: newOverall}})
+        .updateOne({_id: objId}, {$set: {overallRating: newOverall}})
         .then(function () {
-            return get(id);
+            return restOps.get(restaurantId);
         });
 
 }
@@ -67,50 +72,68 @@ async function getAll(restaurantId){
     const restaurant = await restCollection.findOne({ _id: objId });
     if (restaurant === null) throw 'No restaurant with the given restaurantId';
 
-    retRest = {
-        _id: restaurant["_id"].toString(),
-        name: restaurant["name"],
-        location: restaurant["location"],
-        phoneNumber: restaurant["phoneNumber"],
-        website: restaurant["website"],
-        priceRange: restaurant["priceRange"],
-        cuisines: restaurant["cuisines"],
-        overallRating: restaurant["overallRating"],
-        serviceOptions: restaurant["serviceOptions"],
-        reviews: restaurant["reviews"]
-    };
-    return retRest;
+    return restaurant["reviews"];
 }
 
 async function get(reviewId){
     type_checker(reviewId, "string", "reviewId must be a non-empty string");
 
+    review = null;
     const restCollection = await restaurants();
-    for(rest of restCollection){
-        const review = await rest.review.findOne({ _id: reviewId });
-        if (restaurant === null) continue;
-        let retRev = {
-            _id: review["_id"].toString(),
-            title: review["title"],
-            reviewer: review["reviewer"],
-            rating: review["rating"],
-            dateOfReview: review["dateOfReview"],
-            review: review["review"]
+    // const objId = ObjectId(reviewId);
+    let rest = await restCollection.find({'reviews._id': reviewId}).toArray();
+    rest = rest[0];
+    if(rest === undefined || rest === null) throw "No review found with the given id."
+
+    for(rev of rest["reviews"]){
+        if(rev["_id"] == reviewId){
+            review = rev;
+            break;
         }
-        return retRev;
+    } 
+    if (review === null) throw "No review found with the given id.";
+
+    let retRev = {
+        _id: review["_id"],
+        title: review["title"],
+        reviewer: review["reviewer"],
+        rating: review["rating"],
+        dateOfReview: review["dateOfReview"],
+        review: review["review"]
     }
-    throw "No review found with the given id."
+    return retRev;
+    
 }
 
 async function remove(reviewId){
     type_checker(reviewId, "string", "reviewId must be a non-empty string");
 
     const restCollection = await restaurants();
-    for(rest of restCollection){
-        let updatedInfo = await restCollection.updateOne({$id: rest["_id"]}, { $pull: { reviews: { _id: reviewId } }});
-        if (updatedInfo.modifiedCount === 0) continue;
+    // const objId = ObjectId(reviewId);
+    let review = null;
+    
+    let rest = await restCollection.find({'reviews._id': reviewId}).toArray();
+    rest = rest[0];
+
+    for(rev of rest["reviews"]){
+        if(rev["_id"] == reviewId){
+            review = rev;
+            break;
+        }
     }
-    throw "No review found with the given id."
+
+    let updatedInfo = await restCollection.updateOne({_id: rest["_id"]}, {$pull: {reviews: {_id: reviewId} }});
+    console.log(updatedInfo);
+    if (updatedInfo.modifiedCount === 0) throw "No review found with the given id.";
+
+    // let review = await rest.review.findOne({_id: reviewId});
+    let newOverall = (rest["overallRating"] * rest["reviews"].length - review["rating"]) / (rest["reviews"].length - 1);
+
+    return await restCollection
+        .updateOne({_id: rest["_id"]}, {$set: {overallRating: newOverall}})
+        .then(function () {
+            return restOps.get(rest["_id"].toString());
+        });
 }
 
 module.exports = {

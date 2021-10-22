@@ -47,19 +47,19 @@ async function getAll(){
     const restList = await restCollection.find({}).toArray();
 
     let retList = [];
-
+    // modified for the API schema to be only name and id
     for(rest of restList){
         let temp = {
             _id: rest["_id"].toString(),
-            name: rest["name"],
-            location: rest["location"],
-            phoneNumber: rest["phoneNumber"],
-            website: rest["website"],
-            priceRange: rest["priceRange"],
-            cuisines: rest["cuisines"],
-            overallRating: rest["overallRating"],
-            serviceOptions: rest["serviceOptions"],
-            reviews: rest["reviews"]
+            name: rest["name"]
+            // location: rest["location"],
+            // phoneNumber: rest["phoneNumber"],
+            // website: rest["website"],
+            // priceRange: rest["priceRange"],
+            // cuisines: rest["cuisines"],
+            // overallRating: rest["overallRating"],
+            // serviceOptions: rest["serviceOptions"],
+            // reviews: rest["reviews"]
         }
         retList.push(temp);
     }
@@ -145,7 +145,7 @@ async function update(id, name, location, phoneNumber, website, priceRange, cuis
     if(!/\d\d\d-\d\d\d-\d\d\d\d/.test(phoneNumber)) throw "phone number must be of the format xxx-xxx-xxxx";
     if(!/\$*/.test(priceRange) || /\$\$\$\$\$\$*/.test(priceRange)) throw "price range must be a string of 1 to 4 $'s";
 
-    const rest = await getId(id);
+    const rest = await get(id);
     let newRest = {
         name: name,
         location: location,
