@@ -1,0 +1,13 @@
+<h1 name="title">{{title}}</h1>
+
+<a href="/">Make another search</a>
+
+<h2>{{term}}</h2>
+
+<ul>
+    {{#each list}}
+        <li>
+            <a href="/characters/{{id}}">{{name}}</a>
+        </li>
+    {{/each}}
+</ul>

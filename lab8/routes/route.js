@@ -6,11 +6,6 @@ const md5 = require('blueimp-md5');
 const { default: axios } = require('axios');
 const publickey = 'a929b3cec4ce202cbd929a563541589a';
 const privatekey = 'a0643c86dcceb3551471c50f1cfd2220b46a4e14';
-const ts = new Date().getTime();
-const stringToHash = ts + privatekey + publickey;
-const hash = md5(stringToHash);
-const baseUrl = 'https://gateway.marvel.com:443/v1/public/characters';
-const url = baseUrl + '?ts=' + ts + '&apikey=' + publickey + '&hash=' + hash;
 
 
 
@@ -40,16 +35,47 @@ router.post('/search', async(req, res) => {
     try{
         if (!/\S/.test(req.body.searchTerm)) throw "Search term must be non-empty."
     } catch(e) {
-        res.status(400).render("error/400", {title: "Error 400", errorMessage: e.toString()});
+        res.status(400).render("error/genericError", {title: "Error 400", errorMessage: e.toString()});
         return;
     }
 
+    const ts = new Date().getTime();
+    const stringToHash = ts + privatekey + publickey;
+    const hash = md5(stringToHash);
+    const baseUrl = 'https://gateway.marvel.com:443/v1/public/characters';
+    const url = baseUrl + '?nameStartsWith=' + req.body.searchTerm + '&ts=' + ts + '&apikey=' + publickey + '&hash=' + hash;
+
     try{
-        const { data } = await axios.get(url)
-        //TODO stuff with data
+        let data = await axios.get(url);
+        let dataList = data["data"]["data"]["results"];
+        if(dataList.length > 20){
+            dataList = dataList.slice(0, 20);
+        }
+        if(dataList.length === 0){
+            throw "no results found"
+        }
+
+        res.render("characterPages/unordered", {title: "Characters Found", term: req.body.searchTerm, list: dataList});
     } catch(e){
-        //TODO display some sort of error page here
+        res.render("error/notFound", {title: "No Characters Found", searchTerm: req.body.searchTerm});
     }
 });
 
+router.get('/characters/:id', async(req, res) => {
+    const ts = new Date().getTime();
+    const stringToHash = ts + privatekey + publickey;
+    const hash = md5(stringToHash);
+    const baseUrl = 'https://gateway.marvel.com:443/v1/public/characters';
+    const url = baseUrl + req.params.id + '?ts=' + ts + '&apikey=' + publickey + '&hash=' + hash;
+
+    try{
+        let data = await axios.get(url);
+        console.log(data);
+        let dataList = data["results"];
+
+        res.render("characterPages/unordered", {title: "Characters Found", term: req.body.searchTerm, list: dataList});
+    } catch(e){
+        res.status(404).render("error/genericError", {title: "Error 404", errorMessage: "No character found with id: " + req.params.id})
+    }
+});
 module.exports = router;
