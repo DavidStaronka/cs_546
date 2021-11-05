@@ -65,16 +65,20 @@ router.get('/characters/:id', async(req, res) => {
     const ts = new Date().getTime();
     const stringToHash = ts + privatekey + publickey;
     const hash = md5(stringToHash);
-    const baseUrl = 'https://gateway.marvel.com:443/v1/public/characters';
+    const baseUrl = 'https://gateway.marvel.com:443/v1/public/characters/';
     const url = baseUrl + req.params.id + '?ts=' + ts + '&apikey=' + publickey + '&hash=' + hash;
 
     try{
         let data = await axios.get(url);
-        console.log(data);
-        let dataList = data["results"];
+        let dataList = data["data"]["data"]["results"][0];
+        let desc = dataList["description"];
+        if(dataList["description"] == ''){
+            desc = "N/A";
+        }
 
-        res.render("characterPages/unordered", {title: "Characters Found", term: req.body.searchTerm, list: dataList});
+        res.render("characterPages/individual", {title: dataList["name"], path: dataList["thumbnail"]["path"] + "/portrait_xlarge." + dataList["thumbnail"]["extension"], desc: desc, comics: dataList["comics"]["items"]});
     } catch(e){
+        console.log(e);
         res.status(404).render("error/genericError", {title: "Error 404", errorMessage: "No character found with id: " + req.params.id})
     }
 });
