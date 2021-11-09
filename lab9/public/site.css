@@ -1,0 +1,55 @@
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	font-size: 14pt;
+}
+
+body {
+	background: #e63612;
+	font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+main {
+	max-width: 75%;
+	margin: auto;
+}
+
+header {
+	border-bottom: 1px solid #afafaf;
+}
+
+h1 {
+	color: #fa25de;
+	margin-bottom: 5px;
+}
+
+h2 {
+    color: #6fa2ed;
+    margin-left: 555px;
+    transform: rotate(-45deg);
+}
+
+a {
+    color: #07a611;
+}
+
+li{
+    transform: rotate(10deg);
+}
+
+p{
+    color: #e6e219;
+
+}
+
+form {
+    color: #10e078;
+    margin-top: 300px;
+}
+
+#desc{
+    transform: rotate(-180deg);
+}

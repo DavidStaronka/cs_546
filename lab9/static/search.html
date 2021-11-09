@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Character Finder</title>
+    <link rel="stylesheet" href="/public/site.css">
+</head>
+<body>
+    <header>
+        <h1>Character Finder</h1>
+    </header>
+    
+    <main>
+        <p id="desc">This web app allows you to search through the Marvel API. Use the form below to search the API by name, or append /characters/{id} to the current url if you know the id of the character you're looking for.</p>
+
+        <form action="/search" method="post">
+            <label for="search">Search:</label>
+            <input type="text" id="search" name="searchTerm"/>
+            <input type="submit">
+        </form>
+    </main>
+</body>
+</html>
