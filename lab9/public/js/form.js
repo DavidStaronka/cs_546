@@ -15,7 +15,6 @@ function type_checker(item, type, errString, objType){
 }
 
 function palindromeChecker(str){
-    console.log(str);
     type_checker(str, "string", "Input cannot be empty.")
 
     let lower = str.toLowerCase();
