@@ -1,9 +1,14 @@
 const express = require('express');
 const app = express();
 const configRoutes = require('./routes');
-const session = require('express-session')
+const exphbs = require('express-handlebars');
+const session = require('express-session');
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
+app.set('view engine', 'handlebars');
+
 
 app.use(session({
   name: 'AuthCookie',
@@ -12,22 +17,35 @@ app.use(session({
   saveUninitialized: true
 }));
 
-app.use('/private', (req, res, next) => {
-  console.log(req.session.id);
-  if (!req.session.user) {
-    return res.redirect('/');
+app.get('/', (req, res, next) => {
+  // console.log(req.url);
+  if (req.session.user) {
+    console.log(new Date().toUTCString() + ': ' + req.method + ' ' + req.originalUrl + ' (Authorized)');
+    return res.redirect('/private');
   } else {
-    next();
+    console.log(new Date().toUTCString() + ': ' + req.method + ' ' + req.originalUrl + ' (Unauthorized)');
+    return next();
   }
 });
 
-app.use('/login', (req, res, next) => {
+app.use('/private', (req, res, next) => {
+  // console.log(req.url);
+  if (!req.session.user) {
+    console.log(new Date().toUTCString() + ': ' + req.method + ' ' + req.originalUrl + ' (Unauthorized)');
+    return res.redirect('/');
+  } else {
+    console.log(new Date().toUTCString() + ': ' + req.method + ' ' + req.originalUrl + ' (Authorized)');
+    return next();
+  }
+});
+
+app.use('/signup', (req, res, next) => {
   if (req.session.user) {
+    console.log(new Date().toUTCString() + ': ' + req.method + ' ' + req.originalUrl + ' (Authorized)');
     return res.redirect('/private');
   } else {
-    //here I',m just manually setting the req.method to post since it's usually coming from a form
-    req.method = 'POST';
-    next();
+    console.log(new Date().toUTCString() + ': ' + req.method + ' ' + req.originalUrl + ' (Unauthorized)');
+    return next();
   }
 });
 

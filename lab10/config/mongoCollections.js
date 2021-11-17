@@ -8,7 +8,7 @@ const getCollectionFn = (collection) => {
   return async () => {
     if (!_col) {
       const db = await dbConnection();
-      _col = await db.collection(collection);
+      _col = await db.collection(collection, { collation: { locale: 'en_US', strength: 2 } });
     }
 
     return _col;
@@ -17,5 +17,5 @@ const getCollectionFn = (collection) => {
 
 /* Now, you can list your collections here: */
 module.exports = {
-  restaurants: getCollectionFn('users')
+  users: getCollectionFn('users')
 };
