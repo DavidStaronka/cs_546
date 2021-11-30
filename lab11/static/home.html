@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>TV API Search</title>
+    <link rel="stylesheet" href="/public/css/site.css">
+</head>
+<body>
+    <header>
+        <h1>TV API Search</h1>
+    </header>
+    
+    <main>
+        <form id='searchForm'>
+            <input type='text' name='search_term' id='search_term'>
+            <label for='search_term'>Search for a show...</label>
+            <button type='submit'>Search</button>
+        </form>
+
+        <ul id='showList' hidden></ul>
+
+        <div id='show' hidden></div>
+
+        <a href='/'>Back to All Shows</a>
+    </main>
+    <script 
+        src="https://code.jquery.com/jquery-2.2.4.min.js" 
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous">
+    </script>
+    <script src="/public/js/form.js"></script>
+    <footer>
+        <p>David Staronka 10440468</p>
+    </footer>
+</body>
+</html>

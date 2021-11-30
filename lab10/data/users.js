@@ -23,7 +23,7 @@ async function createUser(username, password){
 
     const userCollection = await users();
     const hash = await bcrypt.hash(password, salt);
-    let user = await userCollection.findOne({username: username});
+    let user = await userCollection.findOne({username: username}, {"collation" : {"locale" : "en_US", "strength": 2 }});
 
     //console.log(user);
     if(user != null){
@@ -47,9 +47,9 @@ async function checkUser(username, password){
     if(/.*\s.*/.test(password) || password.length < 6) throw "Password must be at least 6 characters long and not contain any spaces."
 
     const userCollection = await users();
-    let user = await userCollection.findOne({username: username});
+    let user = await userCollection.findOne({username: username}, {"collation" : {"locale" : "en_US", "strength": 2 }});
 
-    //console.log(user);
+    console.log(user);
 
     if(user == null){
         throw "Either the username or password is invalid";
